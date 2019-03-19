@@ -20,11 +20,11 @@ welch <- function(df, metricsColumn, labelsColumn) {
 	return(result)
 }
 
-plotKFoldWelch <- function(ts, degFreedom) {
+plotKFoldWelch <- function(ts, degreeFreedom) {
 	min <- range(ts)[1]
 	max <- range(ts)[2]
 	pts = seq(min, max, length=100)
 	
-	plot(pts, dt(pts, df=degFreedom), col='red', type='l')
+	plot(pts, dt(pts, df=degreeFreedom), col='red', type='l')
 	lines(density(ts))
 }

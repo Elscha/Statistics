@@ -59,16 +59,25 @@ glmAnalysis <- function(df, isFunctionBased, type) {
 welchAnalysis <- function(df, isFunctionBased) {
   df$nErrors[df$nErrors > 0] <- 1
   df <- removeIdentifier(df, isFunctionBased)
-  columnNames <- names(df)
+  columnNames <- normalizeNames(names(df))
   
   model <- data.frame()
+  modelNames <- c("Metric", "p-Value", "t-Value",  "Mean of Healthies", "Mean of Errornous.", "Test Method", "Degrees of Freedom")
   for (column in 2:ncol(df)) {
     print(paste("Process:", columnNames[column]))
-    t <- welch(df, column, 1)
-    data = c(columnNames[column], t$p.value, t$statistic, t$estimate, t$method, t$parameter)
-    model <- rbind(model, data)
+    
+    t <- tryCatch(welch(df, column, 1),
+                  error=function(cond) {
+                      t <- list(p.value = "NA", statistic="NA", estimate=c("NA", "NA"), method="Welch Two Sample t-test", parameter="NA")
+                      return(t)
+                    }
+                  )
+    dataVector <- c(columnNames[column], t$p.value, t$statistic, t$estimate, t$method, t$parameter)
+    names(dataVector) <- modelNames
+    dataDF     <- as.data.frame(t(dataVector))
+    model      <- rbind(model, dataDF)
   }
-  colnames(model) <- c("Metric", "p-Value", "t-Value",  "Mean of Healthies", "Mean of Errornous.", "Test Method", "Degrees of Freedom")
+  colnames(model) <- modelNames
   print("Finished")
   
   return(model)
@@ -150,15 +159,15 @@ analysis <- function(df, isFunctionBased, type, dataName) {
   }
 }
 
-readAndAnalyse <- function(listOfFileNames, isFunctionBased, type) {
+readAndAnalyse <- function(listOfFileNames, isFunctionBased, type, folder) {
   name <- listOfFileNames[1]
   # df <- readFromCSV(listOfFileNames[1], folder="data/atomic_full")
-  df <- readFromCSV(listOfFileNames[1], folder="data/atomic_full")
+  df <- readFromCSV(listOfFileNames[1], folder=folder)
   
   if (length(listOfFileNames) > 1) {
     for (f in listOfFileNames[-1]) {
       print(paste("Process:", f))
-      newItem <- readFromCSV(f, folder="data/atomic_full")
+      newItem <- readFromCSV(f, folder=folder)
       
       # see: https://stackoverflow.com/a/17579145
       df <- merge(df, newItem)[, union(names(df), names(newItem))]
@@ -170,9 +179,9 @@ readAndAnalyse <- function(listOfFileNames, isFunctionBased, type) {
 
 if (length(args) == 0) {
   #stop("Please specify filename.", call.=FALSE)
-  readAndAnalyse(c("Sample"), TRUE, "VisDif")
+  readAndAnalyse(c("Sample"), TRUE, "welch", "data")
 } else {
   # See https://stackoverflow.com/a/26692756
   vargs <- strsplit(args, ",")
-  readAndAnalyse(vargs[[1]], as.logical(vargs[2]), vargs[3])
+  readAndAnalyse(vargs[[1]], as.logical(vargs[2]), vargs[3], "data/atomic_full")
 }
