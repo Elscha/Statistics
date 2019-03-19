@@ -174,5 +174,5 @@ if (length(args) == 0) {
 } else {
   # See https://stackoverflow.com/a/26692756
   vargs <- strsplit(args, ",")
-  readAndAnalyse(vargs[1], as.logical(vargs[2]), vargs[3])
+  readAndAnalyse(vargs[[1]], as.logical(vargs[2]), vargs[3])
 }
