@@ -56,7 +56,7 @@ glmAnalysis <- function(df, isFunctionBased, type) {
   return(model)
 }
 
-welchAnalysis <- function(df, isfunctionBased) {
+welchAnalysis <- function(df, isFunctionBased) {
   df$nErrors[df$nErrors > 0] <- 1
   df <- removeIdentifier(df, isFunctionBased)
   columnNames <- names(df)
