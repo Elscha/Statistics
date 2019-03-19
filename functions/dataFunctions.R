@@ -1,3 +1,19 @@
+mergeFileDFs <- function(listOfDFs) {
+  # See: https://stackoverflow.com/a/47950810 & https://blog.zhaw.ch/datascience/r-reduce-applys-lesser-known-brother/
+  df <- Reduce(function(x,y) merge(x,y, by="File"), listOfDFs)
+  
+  return(df)
+}
+
+mergeFunctionDFs <- function(listOfDFs) {
+  # See: https://stackoverflow.com/a/47950810 & https://blog.zhaw.ch/datascience/r-reduce-applys-lesser-known-brother/
+  # Also use function to avoid duplicated column
+  df <- Reduce(function(x,y) merge(x,y, by=c("File", "Function", "Line")), listOfDFs)
+  
+  return(df)
+}
+
+
 # Removes the last nRows (onlyLast=FALSE) or returns
 # only the last nRows (onlyLast=TRUE).
 lastNRows <- function(df, nRows, onlyLast=TRUE) {

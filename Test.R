@@ -10,7 +10,7 @@ source("functions/welchFunctions.R")
 df <- readFromCSV("Sample")
 df$nErrors[df$nErrors > 0] <- 1
 df <- removeIdentifier(df, TRUE)
-ts <- kFoldWelch(df, 3, 1, nSamples=10)
+ts <- kFoldWelch(df, 2, 1, nSamples=10)
 t <- welch(df,2,1)
 ## print(range(ts)$statistic)
 ## print(t)
@@ -25,3 +25,4 @@ t <- welch(df,2,1)
 #lines(density(ts))
 
 plotKFoldWelch(ts, t$parameter)
+print(t)
