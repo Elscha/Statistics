@@ -63,11 +63,13 @@ welchAnalysis <- function(df, isfunctionBased) {
   
   model <- data.frame()
   for (column in 2:ncol(df)) {
+    print(paste("Process:", columnNames[column]))
     t <- welch(df, column, 1)
     data = c(columnNames[column], t$p.value, t$statistic, t$estimate, t$method, t$parameter)
     model <- rbind(model, data)
   }
   colnames(model) <- c("Metric", "p-Value", "t-Value",  "Mean of Healthies", "Mean of Errornous.", "Test Method", "Degrees of Freedom")
+  print("Finished")
   
   return(model)
 }
