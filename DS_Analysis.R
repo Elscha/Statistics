@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 args = commandArgs(trailingOnly=TRUE)
 source("functions/functions.R")
-source("functions/datafunctions.R")
+source("functions/dataFunctions.R")
 source("functions/binClassificationFunctions.R")
 source("functions/pcaFunctions.R")
 source("functions/plotFunctions.R")
