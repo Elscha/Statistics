@@ -153,7 +153,7 @@ analysis <- function(df, isFunctionBased, type, dataName) {
 readAndAnalyse <- function(listOfFileNames, isFunctionBased, type) {
   name <- listOfFileNames[1]
   # df <- readFromCSV(listOfFileNames[1], folder="data/atomic_full")
-  df <- readFromCSV(listOfFileNames[1], folder="data")
+  df <- readFromCSV(listOfFileNames[1], folder="data/atomic_full")
   
   if (length(listOfFileNames) > 1) {
     for (f in listOfFileNames[-1]) {
