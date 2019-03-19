@@ -1,5 +1,5 @@
 source("functions/functions.R")
-source("functions/datafunctions.R")
+source("functions/dataFunctions.R")
 
 linearRegression <- function(df) {
   # cf. https://stackoverflow.com/a/11991742
