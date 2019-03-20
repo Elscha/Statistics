@@ -31,8 +31,6 @@ createCumlativeDistributionPlot <- function(df, metricsColumn, labelsColumn, nam
   # Based on: https://stackoverflow.com/a/20601807
   goods <- df[metricsColumn][df[labelsColumn]==0, ]
   bads  <- df[metricsColumn][df[labelsColumn]>0, ]
-
-  bads <- (goods * 5)
   
   distFuncGoods <- ecdf(goods)    # P is a function giving the empirical CDF of goods
   distFuncBads  <- ecdf(bads)     # P is a function giving the empirical CDF of bads

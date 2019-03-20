@@ -149,9 +149,10 @@ analysis <- function(df, isFunctionBased, type, dataName) {
     columnNames <- names(df)
     
     for (column in 2:ncol(df)) {
-      metricName <- columnNames[column]
-      print(paste("Process:", columnNames[column]))
-      plot <- createCumlativeDistributionPlot(df, column, 1, metricName)
+      metricName <- normalizeNames(columnNames[column])
+      
+      print(paste("Process:", metricName))
+      plot     <- createCumlativeDistributionPlot(df, column, 1, metricName)
       fileName <- paste("ECDF-", metricName, ".png", sep="")
       savePlot(plot, "out", file=fileName)
     }
