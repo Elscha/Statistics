@@ -1,3 +1,5 @@
+library(ggplot2)
+
 createVioplotForMetric <- function(df, metricsColumn, labelsColumn, addToExistingPlot=TRUE) {
   library(vioplot)
   
@@ -11,7 +13,6 @@ createVioplotForMetric <- function(df, metricsColumn, labelsColumn, addToExistin
   return(plot)
 }
 createVioplotForMetric2 <- function(df, metricsColumn, labelsColumn, trim=TRUE) {
-  library(ggplot2)
   
   df[[labelsColumn]] <- as.factor(df[[labelsColumn]])
   columNames <- names(df)
@@ -24,6 +25,25 @@ createVioplotForMetric2 <- function(df, metricsColumn, labelsColumn, trim=TRUE) 
   plot <- plot + theme(legend.background = element_rect(fill="lightblue", size=0.5, linetype="solid", colour ="darkblue"))
   
   return(plot)
+}
+
+createCumlativeDistributionPlot <- function(df, metricsColumn, labelsColumn, name="ECDF Plot", verticals=TRUE, points=FALSE) {
+  # Based on: https://stackoverflow.com/a/20601807
+  goods <- df[metricsColumn][df[labelsColumn]==0, ]
+  bads  <- df[metricsColumn][df[labelsColumn]>0, ]
+
+  bads <- (goods * 5)
+  
+  distFuncGoods <- ecdf(goods)    # P is a function giving the empirical CDF of goods
+  distFuncBads  <- ecdf(bads)     # P is a function giving the empirical CDF of bads
+  
+  #minValue <- min(goods, bads)
+  maxValue <- max(goods, bads)
+  
+  p <- plot(distFuncGoods, verticals=verticals, do.points=points, col='blue', main=name, xlim=c(-1, maxValue))
+  p <- plot(distFuncBads, verticals=verticals, do.points=points, add=TRUE, col='red')
+  
+  return(p)
 }
 
 savePlot <- function(plot, folder, file="Plot.png") {

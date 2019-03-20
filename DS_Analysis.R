@@ -72,6 +72,7 @@ welchAnalysis <- function(df, isFunctionBased) {
                       return(t)
                     }
                   )
+    # Degress of Fredom are non-Integers when data sets are not balanced: https://stats.stackexchange.com/q/116511
     dataVector <- c(columnNames[column], t$p.value, t$statistic, t$estimate, t$method, t$parameter)
     names(dataVector) <- modelNames
     dataDF     <- as.data.frame(t(dataVector))
@@ -141,6 +142,21 @@ analysis <- function(df, isFunctionBased, type, dataName) {
     print("Finished")
   } else if (type == "welch") {
     model <- welchAnalysis(df, isFunctionBased)
+    analysisName <- paste("Welch test results for ", dataName, sep="")
+  } else if (type == "ecdf") {
+    df$nErrors[df$nErrors > 0] <- 1
+    df <- removeIdentifier(df, isFunctionBased)
+    columnNames <- names(df)
+    
+    for (column in 2:ncol(df)) {
+      metricName <- columnNames[column]
+      print(paste("Process:", columnNames[column]))
+      plot <- createCumlativeDistributionPlot(df, column, 1, metricName)
+      fileName <- paste("ECDF-", metricName, ".png", sep="")
+      savePlot(plot, "out", file=fileName)
+    }
+    model <- NULL
+    print("Finished")
   } else {
     print("Please specify one of the following arguments:")
     print("- lm: Linear regression, all metrics are independent")
@@ -149,9 +165,10 @@ analysis <- function(df, isFunctionBased, type, dataName) {
     print("- glm[-k]: Logistic Regression (Binary classification), optional k-Fold based")
     print("- mergePCs: Select metrics, which are used in pricinpal components")
     print("- mergeOnly: MErge only metrics (from multiple input data) into one common sheet")
-    print("- VisDif: Compute violin diagrams for each metric (healthy vs. errornous functions)")
-    print("- anova: Compute statistical summaries and ANOVA test for each metric (healthy vs. errornous functions)")
-    print("- welch: Single Welch test on each metric (healthy vs. errornous functions)")
+    print("- VisDif: Compute violin diagrams for each metric (healthy vs. erroneous functions)")
+    print("- anova: Compute statistical summaries and ANOVA test for each metric (healthy vs. erroneous functions)")
+    print("- welch: Single Welch test on each metric (healthy vs. erroneous functions)")
+    print("- ecdf: Compute Comulative Distributed Diagrams for each metric (healthy vs. erroneous functions)")
   }
   
   if (!is.null(model)) {
@@ -179,7 +196,7 @@ readAndAnalyse <- function(listOfFileNames, isFunctionBased, type, folder) {
 
 if (length(args) == 0) {
   #stop("Please specify filename.", call.=FALSE)
-  readAndAnalyse(c("Sample"), TRUE, "welch", "data")
+  readAndAnalyse(c("Sample"), TRUE, "ecdf", "data")
 } else {
   # See https://stackoverflow.com/a/26692756
   vargs <- strsplit(args, ",")
