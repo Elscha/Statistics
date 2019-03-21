@@ -84,6 +84,33 @@ welchAnalysis <- function(df, isFunctionBased) {
   return(model)
 }
 
+kruskalAnalysis <- function(df, isFunctionBased) {
+  df$nErrors[df$nErrors > 0] <- 1
+  df <- removeIdentifier(df, isFunctionBased)
+  columnNames <- normalizeNames(names(df))
+  
+  model <- data.frame()
+  modelNames <- c("Metric", "p-Value", "chi-Value", "Test Method", "Degrees of Freedom")
+  for (column in 2:ncol(df)) {
+    print(paste("Process:", columnNames[column]))
+    
+    t <- tryCatch(kruskalWallis(df, column, 1),
+                  error=function(cond) {
+                    t <- list(p.value = "NA", statistic="NA", method="Kruskal-Wallis rank sum test", parameter="NA")
+                    return(t)
+                  }
+    )
+    dataVector <- c(columnNames[column], t$p.value, t$statistic, t$method, t$parameter)
+    names(dataVector) <- modelNames
+    dataDF     <- as.data.frame(t(dataVector))
+    model      <- rbind(model, dataDF)
+  }
+  colnames(model) <- modelNames
+  print("Finished")
+  
+  return(model)
+}
+
 analysis <- function(df, isFunctionBased, type, dataName) {
   df <- convertToNumbers2(df, isFunctionBased)
   analysisName <- paste("CorrelationResults (", type, ") for ", dataName, sep="")
@@ -143,6 +170,9 @@ analysis <- function(df, isFunctionBased, type, dataName) {
   } else if (type == "welch") {
     model <- welchAnalysis(df, isFunctionBased)
     analysisName <- paste("Welch test results for ", dataName, sep="")
+  } else if (type == "kruskal") {
+    model <- kruskalAnalysis(df, isFunctionBased)
+    analysisName <- paste("Kruskal-Wallis test results for ", dataName, sep="")
   } else if (grepl("^ecdf", type)) {
     df$nErrors[df$nErrors > 0] <- 1
     df <- removeIdentifier(df, isFunctionBased)
@@ -181,6 +211,7 @@ analysis <- function(df, isFunctionBased, type, dataName) {
     print("- VisDif: Compute violin diagrams for each metric (healthy vs. erroneous functions)")
     print("- anova: Compute statistical summaries and ANOVA test for each metric (healthy vs. erroneous functions)")
     print("- welch: Single Welch test on each metric (healthy vs. erroneous functions)")
+    print("- kruskal: Kruskal-Wallis test on each metric (healthy vs. erroneous functions)")
     print("- ecdf[-log][-no0]: Compute Comulative Distributed Diagrams for each metric (healthy vs. erroneous functions); optional use a logarithmic scale; optional remove rows containing Zeros")
   }
   
