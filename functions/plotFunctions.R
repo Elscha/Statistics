@@ -41,13 +41,13 @@ createCumlativeDistributionPlot <- function(df, metricsColumn, labelsColumn, nam
   #minValue <- min(goods, bads)
   maxValue <- max(goods, bads)
   addPlot  <- TRUE
-  if (length(goods) > 0) {
+  if (nrow(goods) > 0) {
     distFuncGoods <- ecdf(goods)    # P is a function giving the empirical CDF of goods
     p <- plot(distFuncGoods, verticals=verticals, do.points=points, col='blue', main=name, xlim=c(xMin, maxValue))
   } else {
     addPlot <- FALSE
   }
-  if (length(bads) > 0) {
+  if (nrow(bads) > 0) {
     distFuncBads  <- ecdf(bads)     # P is a function giving the empirical CDF of bads
     p <- plot(distFuncBads, verticals=verticals, do.points=points, add=addPlot, col='red')
   }

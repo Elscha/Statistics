@@ -158,7 +158,7 @@ analysis <- function(df, isFunctionBased, type, dataName) {
       
       if(removeZeros) {
         filteredDF <- removeRowsByValue(df, column, 0)
-        if (length(filteredDF) > 0) {
+        if (nrow(filteredDF) > 0) {
           plot     <- createCumlativeDistributionPlot(filteredDF, column, 1, metricName, scale=logScale, xMin=0)
           savePlot(plot, "out", file=fileName)
         }
