@@ -44,7 +44,9 @@ createCumlativeDistributionPlot <- function(df, metricsColumn, labelsColumn, nam
   maxValue <- max(goods, bads)
   
   p <- plot(distFuncGoods, verticals=verticals, do.points=points, col='blue', main=name, xlim=c(xMin, maxValue))
-  p <- plot(distFuncBads, verticals=verticals, do.points=points, add=TRUE, col='red')
+  if (length(bads) > 0) {
+    p <- plot(distFuncBads, verticals=verticals, do.points=points, add=TRUE, col='red')
+  }
   
   return(p)
 }
