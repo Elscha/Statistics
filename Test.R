@@ -33,6 +33,9 @@ source("functions/welchFunctions.R")
 # df <- as.data.frame(cbind(col1, col2, col3))
 # print(df)
 # 
-# df2 <- df[(df[1] != 0), ]
+# df2 <- removeRowsByValue(df, 1, 0)
 # print(df2)
-grepl("-no0", "ecdf-log-no0")
+# df3 <- removeRowsByValue(df, 2, 1)
+# print(df3)
+# grepl("-no0", "ecdf-log-no0")
+plot(c(0), col='blue')

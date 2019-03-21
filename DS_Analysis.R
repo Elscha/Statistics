@@ -154,17 +154,20 @@ analysis <- function(df, isFunctionBased, type, dataName) {
     for (column in 2:ncol(df)) {
       metricName <- columnNames[column]
       print(paste("Process:", metricName))
+      fileName <- paste("ECDF-", metricName, ".png", sep="")
       
       if(removeZeros) {
         filteredDF <- removeRowsByValue(df, column, 0)
-        plot       <- createCumlativeDistributionPlot(filteredDF, column, 1, metricName, scale=logScale, xMin=0)
+        if (length(filteredDF) > 0) {
+          plot     <- createCumlativeDistributionPlot(filteredDF, column, 1, metricName, scale=logScale, xMin=0)
+          savePlot(plot, "out", file=fileName)
+        }
       } else {
         plot       <- createCumlativeDistributionPlot(df, column, 1, metricName, scale=logScale)
+        savePlot(plot, "out", file=fileName)
       }
-      
-      fileName <- paste("ECDF-", metricName, ".png", sep="")
-      savePlot(plot, "out", file=fileName)
     }
+    
     model <- NULL
     print("Finished")
   } else {
