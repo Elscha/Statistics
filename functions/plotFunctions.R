@@ -27,10 +27,15 @@ createVioplotForMetric2 <- function(df, metricsColumn, labelsColumn, trim=TRUE) 
   return(plot)
 }
 
-createCumlativeDistributionPlot <- function(df, metricsColumn, labelsColumn, name="ECDF Plot", verticals=TRUE, points=FALSE) {
+createCumlativeDistributionPlot <- function(df, metricsColumn, labelsColumn, name="ECDF Plot", verticals=TRUE, points=FALSE, scale=FALSE) {
   # Based on: https://stackoverflow.com/a/20601807
   goods <- df[metricsColumn][df[labelsColumn]==0, ]
   bads  <- df[metricsColumn][df[labelsColumn]>0, ]
+  
+  if (scale) {
+    goods <- log1p(goods)
+    bads <- log1p(bads)
+  }
   
   distFuncGoods <- ecdf(goods)    # P is a function giving the empirical CDF of goods
   distFuncBads  <- ecdf(bads)     # P is a function giving the empirical CDF of bads

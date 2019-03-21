@@ -143,16 +143,18 @@ analysis <- function(df, isFunctionBased, type, dataName) {
   } else if (type == "welch") {
     model <- welchAnalysis(df, isFunctionBased)
     analysisName <- paste("Welch test results for ", dataName, sep="")
-  } else if (type == "ecdf") {
+  } else if (type == "ecdf" || type == "ecdf-log") {
     df$nErrors[df$nErrors > 0] <- 1
     df <- removeIdentifier(df, isFunctionBased)
     columnNames <- names(df)
+    
+    logScale = (type == "ecdf-log")
     
     for (column in 2:ncol(df)) {
       metricName <- normalizeNames(columnNames[column])
       
       print(paste("Process:", metricName))
-      plot     <- createCumlativeDistributionPlot(df, column, 1, metricName)
+      plot     <- createCumlativeDistributionPlot(df, column, 1, metricName, scale=logScale)
       fileName <- paste("ECDF-", metricName, ".png", sep="")
       savePlot(plot, "out", file=fileName)
     }
@@ -165,11 +167,11 @@ analysis <- function(df, isFunctionBased, type, dataName) {
     print("- pca-linear/loc: PC analysis with linear or logarithmic normaliation")
     print("- glm[-k]: Logistic Regression (Binary classification), optional k-Fold based")
     print("- mergePCs: Select metrics, which are used in pricinpal components")
-    print("- mergeOnly: MErge only metrics (from multiple input data) into one common sheet")
+    print("- mergeOnly: Merge only metrics (from multiple input data) into one common sheet")
     print("- VisDif: Compute violin diagrams for each metric (healthy vs. erroneous functions)")
     print("- anova: Compute statistical summaries and ANOVA test for each metric (healthy vs. erroneous functions)")
     print("- welch: Single Welch test on each metric (healthy vs. erroneous functions)")
-    print("- ecdf: Compute Comulative Distributed Diagrams for each metric (healthy vs. erroneous functions)")
+    print("- ecdf[-log]: Compute Comulative Distributed Diagrams for each metric (healthy vs. erroneous functions), optional use a logarithmic scale")
   }
   
   if (!is.null(model)) {
