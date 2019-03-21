@@ -95,7 +95,7 @@ removeColumnsByName <- function(df, columnNames, removeSelected=TRUE) {
 
 removeRowsByValue <- function(df, column, valueToRemove) {
   # Based on: https://stackoverflow.com/a/8006918
-  newDF <- df[(df[column] != value), ]
+  newDF <- df[(df[column] != valueToRemove), ]
   
   return(newDF)
 }

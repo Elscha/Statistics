@@ -187,6 +187,7 @@ analysis <- function(df, isFunctionBased, type, dataName) {
 }
 
 readAndAnalyse <- function(listOfFileNames, isFunctionBased, type, folder) {
+  print(paste("Performing", type, "analysis."))
   name <- listOfFileNames[1]
   # df <- readFromCSV(listOfFileNames[1], folder="data/atomic_full")
   df <- readFromCSV(listOfFileNames[1], folder=folder)
