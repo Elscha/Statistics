@@ -143,18 +143,25 @@ analysis <- function(df, isFunctionBased, type, dataName) {
   } else if (type == "welch") {
     model <- welchAnalysis(df, isFunctionBased)
     analysisName <- paste("Welch test results for ", dataName, sep="")
-  } else if (type == "ecdf" || type == "ecdf-log") {
+  } else if (grepl("^ecdf", type)) {
     df$nErrors[df$nErrors > 0] <- 1
     df <- removeIdentifier(df, isFunctionBased)
-    columnNames <- names(df)
+    columnNames <- normalizeNames(names(df))
     
-    logScale = (type == "ecdf-log")
+    logScale = grepl("-log", type)
+    removeZeros = grepl("-no0", type)
     
     for (column in 2:ncol(df)) {
-      metricName <- normalizeNames(columnNames[column])
-      
+      metricName <- columnNames[column]
       print(paste("Process:", metricName))
-      plot     <- createCumlativeDistributionPlot(df, column, 1, metricName, scale=logScale)
+      
+      if(removeZeros) {
+        filteredDF <- removeRowsByValue(df, column, 0)
+        plot       <- createCumlativeDistributionPlot(filteredDF, column, 1, metricName, scale=logScale, xMin=0)
+      } else {
+        plot       <- createCumlativeDistributionPlot(df, column, 1, metricName, scale=logScale)
+      }
+      
       fileName <- paste("ECDF-", metricName, ".png", sep="")
       savePlot(plot, "out", file=fileName)
     }
@@ -165,13 +172,13 @@ analysis <- function(df, isFunctionBased, type, dataName) {
     print("- lm: Linear regression, all metrics are independent")
     print("- lm2: Linear regression, consider also metric combinations")
     print("- pca-linear/loc: PC analysis with linear or logarithmic normaliation")
-    print("- glm[-k]: Logistic Regression (Binary classification), optional k-Fold based")
+    print("- glm[-k]: Logistic Regression (Binary classification); optional k-Fold based")
     print("- mergePCs: Select metrics, which are used in pricinpal components")
     print("- mergeOnly: Merge only metrics (from multiple input data) into one common sheet")
     print("- VisDif: Compute violin diagrams for each metric (healthy vs. erroneous functions)")
     print("- anova: Compute statistical summaries and ANOVA test for each metric (healthy vs. erroneous functions)")
     print("- welch: Single Welch test on each metric (healthy vs. erroneous functions)")
-    print("- ecdf[-log]: Compute Comulative Distributed Diagrams for each metric (healthy vs. erroneous functions), optional use a logarithmic scale")
+    print("- ecdf[-log][-no0]: Compute Comulative Distributed Diagrams for each metric (healthy vs. erroneous functions); optional use a logarithmic scale; optional remove rows containing Zeros")
   }
   
   if (!is.null(model)) {

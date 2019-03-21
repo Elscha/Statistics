@@ -27,7 +27,7 @@ createVioplotForMetric2 <- function(df, metricsColumn, labelsColumn, trim=TRUE) 
   return(plot)
 }
 
-createCumlativeDistributionPlot <- function(df, metricsColumn, labelsColumn, name="ECDF Plot", verticals=TRUE, points=FALSE, scale=FALSE) {
+createCumlativeDistributionPlot <- function(df, metricsColumn, labelsColumn, name="ECDF Plot", verticals=TRUE, points=FALSE, scale=FALSE, xMin=-1) {
   # Based on: https://stackoverflow.com/a/20601807
   goods <- df[metricsColumn][df[labelsColumn]==0, ]
   bads  <- df[metricsColumn][df[labelsColumn]>0, ]
@@ -43,7 +43,7 @@ createCumlativeDistributionPlot <- function(df, metricsColumn, labelsColumn, nam
   #minValue <- min(goods, bads)
   maxValue <- max(goods, bads)
   
-  p <- plot(distFuncGoods, verticals=verticals, do.points=points, col='blue', main=name, xlim=c(-1, maxValue))
+  p <- plot(distFuncGoods, verticals=verticals, do.points=points, col='blue', main=name, xlim=c(xMin, maxValue))
   p <- plot(distFuncBads, verticals=verticals, do.points=points, add=TRUE, col='red')
   
   return(p)

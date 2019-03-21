@@ -93,6 +93,13 @@ removeColumnsByName <- function(df, columnNames, removeSelected=TRUE) {
   return(df)
 }
 
+removeRowsByValue <- function(df, column, valueToRemove) {
+  # Based on: https://stackoverflow.com/a/8006918
+  newDF <- df[(df[column] != value), ]
+  
+  return(newDF)
+}
+
 normalizeColumnNames <- function(df) {
   names <- normalizeNames(colnames(df))
   
