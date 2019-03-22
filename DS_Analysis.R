@@ -196,6 +196,9 @@ analysis <- function(df, isFunctionBased, type, dataName) {
         plot       <- createCumlativeDistributionPlot(df, column, 1, metricName, scale=logScale)
         savePlot(plot, "out", file=fileName)
       }
+    }
+    model <- NULL
+    print("Finished")
   } else if (grepl("^density", type)) {
     df$nErrors[df$nErrors > 0] <- 1
     df <- removeIdentifier(df, isFunctionBased)
