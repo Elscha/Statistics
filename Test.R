@@ -6,15 +6,21 @@ source("functions/functions.R")
 source("functions/datafunctions.R")
 source("functions/plotFunctions.R")
 source("functions/welchFunctions.R")
+# col1 = c(0, 0, 1, 0, 1)
+# col2 = c(1, 1, 1, 0, 1)
+# col3 = c(1, 2, 3, 4, 5)
+# fictiveDF <- as.data.frame(cbind(col1, col2, col3))
 
-# df <- readFromCSV("Sample", folder="data")
-# df <- convertToNumbers2(df, TRUE)
-# df <- removeIdentifier(df, TRUE)
-# df$nErrors[df$nErrors > 0] <- 1
-# columNames <- names(df)
-# column = 100
-# name = columNames[column]
-# plot <- createCumlativeDistributionPlot(df, column, 1, name)
+
+
+
+df <- readFromCSV("Sample", folder="data")
+df <- convertToNumbers2(df, TRUE)
+df <- removeIdentifier(df, TRUE)
+columNames <- names(df)
+column = 2
+name = columNames[column]
+plot <- createKernelDensityPlot(df, column, 1, name)
 # print(plot)
 # goods <- df[column][df[1]==0, ]
 # m <- max(goods)
@@ -27,13 +33,9 @@ source("functions/welchFunctions.R")
 # min = min(l$x)
 # max = max(l$x)
 
-col1 = c(0, 0, 1, 0, 1)
-col2 = c(1, 1, 1, 0, 1)
-col3 = c(1, 2, 3, 4, 5)
-df <- as.data.frame(cbind(col1, col2, col3))
-print(df)
-
-result <- kruskalWallis(df, 2, 1)
-print(result)
+# print(df)
+# 
+# result <- kruskalWallis(df, 2, 1)
+# print(result)
 # grepl("-no0", "ecdf-log-no0")
 # plot(c(0), col='blue')

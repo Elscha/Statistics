@@ -196,6 +196,29 @@ analysis <- function(df, isFunctionBased, type, dataName) {
         plot       <- createCumlativeDistributionPlot(df, column, 1, metricName, scale=logScale)
         savePlot(plot, "out", file=fileName)
       }
+  } else if (grepl("^density", type)) {
+    df$nErrors[df$nErrors > 0] <- 1
+    df <- removeIdentifier(df, isFunctionBased)
+    columnNames <- normalizeNames(names(df))
+    
+    logScale = grepl("-log", type)
+    removeZeros = grepl("-no0", type)
+    
+    for (column in 2:ncol(df)) {
+      metricName <- columnNames[column]
+      print(paste("Process:", metricName))
+      fileName <- paste("DensityPlot-", metricName, ".png", sep="")
+      
+      if(removeZeros) {
+        filteredDF <- removeRowsByValue(df, column, 0)
+        if (length(filteredDF) > 0 && nrow(filteredDF) > 0) {
+          plot     <- createKernelDensityPlot(filteredDF, column, 1, metricName, scale=logScale)
+          savePlot(plot, "out", file=fileName)
+        }
+      } else {
+        plot       <- createKernelDensityPlot(df, column, 1, metricName, scale=logScale)
+        savePlot(plot, "out", file=fileName)
+      }
     }
     
     model <- NULL
@@ -213,6 +236,7 @@ analysis <- function(df, isFunctionBased, type, dataName) {
     print("- welch: Single Welch test on each metric (healthy vs. erroneous functions)")
     print("- kruskal: Kruskal-Wallis test on each metric (healthy vs. erroneous functions)")
     print("- ecdf[-log][-no0]: Compute Comulative Distributed Diagrams for each metric (healthy vs. erroneous functions); optional use a logarithmic scale; optional remove rows containing Zeros")
+    print("- density[-log][-no0]: Compute Density plots for each metric (healthy vs. erroneous functions); optional use a logarithmic scale; optional remove rows containing Zeros")
   }
   
   if (!is.null(model)) {
