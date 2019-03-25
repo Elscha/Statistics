@@ -232,13 +232,14 @@ analysis <- function(df, isFunctionBased, type, dataName) {
     columnNames <- normalizeNames(names(df))
     names(df) <- columnNames
     
-    pool    <- grepl("-pool", type)
-    hedgesD <- grepl("-hedgesD", type)
+    pool       <- grepl("-pool", type)
+    hedgesD    <- grepl("-hedgesD", type)
+    addSummary <- grepl("-summary", type)
     
     model <- data.frame()
     for (column in 2:ncol(df)) {
       print(paste("Process:", columnNames[column]))
-      result  <- cohensD.as.vector(df, column, 1, pool=pool, hedgesD=hedgesD)
+      result  <- cohensD.as.df(df, column, 1, pool=pool, hedgesD=hedgesD)
       model   <- rbind(model, result)
     }
     print("Finished")
@@ -256,7 +257,7 @@ analysis <- function(df, isFunctionBased, type, dataName) {
     print("- kruskal: Kruskal-Wallis test on each metric (healthy vs. erroneous functions)")
     print("- ecdf[-log][-no0]: Compute Comulative Distributed Diagrams for each metric (healthy vs. erroneous functions); optional use a logarithmic scale; optional remove rows containing Zeros")
     print("- density[-log][-no0]: Compute Density plots for each metric (healthy vs. erroneous functions); optional use a logarithmic scale; optional remove rows containing Zeros")
-    print("- cohen[-pool][-hedgesD]: Compute Cohens'D to measure effect size; optional use pooled variance (for unbalanced samples); optional use Hedges'g(for unbalanced samples)")
+    print("- cohen[-pool][-hedgesD][-summary]: Compute Cohens'D to measure effect size; optional use pooled variance (for unbalanced samples); optional use Hedges'g(for unbalanced samples); optional computes statistical summary of both classes like median, mean, ...")
   }
   
   if (!is.null(model)) {

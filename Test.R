@@ -38,9 +38,8 @@ column = 2
 # grepl("-no0", "ecdf-log-no0")
 # plot(c(0), col='blue')
 
-# result <- cohensD(df, 2, 1)
 
-r1 <- cohensD.as.vector(df, column, 1)
-column = 3
-r2 <- cohensD.as.vector(df, column, 1)
-r3 <- rbind(r1, r2)
+r1 <- cohensD.as.df(df, column, 1, addSummary=TRUE)
+# column = 3
+# r2 <- cohensD.as.df(df, column, 1)
+# r3 <- rbind(r1, r2)

@@ -179,7 +179,7 @@ cohensD <- function(df, metricsColumn, labelsColumn, pool=FALSE, hedgesD=FALSE) 
   return(result)
 }
 
-cohensD.as.vector <- function(df, metricsColumn, labelsColumn, pool=FALSE, hedgesD=FALSE) {
+cohensD.as.df <- function(df, metricsColumn, labelsColumn, pool=FALSE, hedgesD=FALSE, addSummary=FALSE) {
   metricName <- names(df[metricsColumn])
   r <- cohensD(df, metricsColumn, labelsColumn, pool=pool, hedgesD=hedgesD)
   
@@ -190,5 +190,35 @@ cohensD.as.vector <- function(df, metricsColumn, labelsColumn, pool=FALSE, hedge
   names(result) <- c("Metric", "Delta", "Classification", "Test Method", "Conf int. (lower)", "Conf int. (upper)")
   result.as.df  <- as.data.frame(t(result))
   
+  if (addSummary) {
+    goods <- df[metricsColumn][df[labelsColumn]==0, ]
+    bads  <- df[metricsColumn][df[labelsColumn]>0, ]
+    
+    summary.goods <- summary(goods)
+    summary.bads  <- summary(bads)
+    median.diff   <- extractSummary(summary.goods, 3) - extractSummary(summary.bads, 3)
+    mean.diff     <- extractSummary(summary.goods, 4) - extractSummary(summary.bads, 4)
+    summary.both  <- c(extractSummary(summary.goods, 1), extractSummary(summary.goods, 2), extractSummary(summary.goods, 3),
+                       extractSummary(summary.goods, 4), extractSummary(summary.goods, 5), extractSummary(summary.goods, 6),
+                       extractSummary(summary.bads, 1), extractSummary(summary.bads, 2), extractSummary(summary.bads, 3),
+                       extractSummary(summary.bads, 4), extractSummary(summary.bads, 5), extractSummary(summary.bads, 6),
+                       mean.diff, median.diff)
+    
+    names(summary.both) <- c("Min. (Healthy)", "1st Qu. (Healthy)", "Median (Healthy)", "Mean (Healthy)", "3rd Qu. (Healthy)", "Max. (Healthy)",
+                             "Min. (Errorneous)", "1st Qu. (Errorneous)", "Median (Errorneous)", "Mean (Errorneous)", "3rd Qu. (Errorneous)", "Max. (Errorneous)",
+                             "Mean Diff", "Median Diff")
+    
+    result.as.df2 <- as.data.frame(t(summary.both))
+    result.as.df  <- cbind(result.as.df, result.as.df2)
+  }
+  
   return(result.as.df)
+}
+
+statisticalSummary <- function(df) {
+  return(summary(df))
+}
+
+extractSummary <- function(summaryVector, index) {
+  return (as.numeric(trimws(sub("^.*:", "", summaryVector[index]))))
 }
