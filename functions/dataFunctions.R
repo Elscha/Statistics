@@ -108,7 +108,10 @@ normalizeColumnNames <- function(df) {
 }
 
 normalizeNames <- function(names) {
+  names <- gsub("\\.\\.\\.", " & ", names)
+  names <- gsub("\\.\\.", "@@", names)
   names <- gsub("\\.", " ", names)
+  names <- gsub("@@", "\\. ", names)
   # Clean-up of type names
   names <- gsub(" bool 1 ", "(bool=1)", names)
   names <- gsub(" tristate 1 ", "(tristate=1)", names)
