@@ -12,15 +12,13 @@ source("functions/welchFunctions.R")
 # fictiveDF <- as.data.frame(cbind(col1, col2, col3))
 
 
-
-
 df <- readFromCSV("Sample", folder="data")
 df <- convertToNumbers2(df, TRUE)
 df <- removeIdentifier(df, TRUE)
 columNames <- names(df)
 column = 2
-name = columNames[column]
-plot <- createKernelDensityPlot(df, column, 1, name)
+# name = columNames[column]
+# plot <- createKernelDensityPlot(df, column, 1, name, scale=TRUE)
 # print(plot)
 # goods <- df[column][df[1]==0, ]
 # m <- max(goods)
@@ -39,3 +37,10 @@ plot <- createKernelDensityPlot(df, column, 1, name)
 # print(result)
 # grepl("-no0", "ecdf-log-no0")
 # plot(c(0), col='blue')
+
+# result <- cohensD(df, 2, 1)
+
+r1 <- cohensD.as.vector(df, column, 1)
+column = 3
+r2 <- cohensD.as.vector(df, column, 1)
+r3 <- rbind(r1, r2)

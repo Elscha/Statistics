@@ -138,6 +138,7 @@ applyPCs <- function(df, usefullMetrics, isfunctionBased=TRUE) {
   return(df)
 }
 
+# ANOVA
 varianceTest <- function(df, metricsColumn, labelsColumn) {
   columNames <- names(df)
   goods <- df[metricsColumn][df[labelsColumn]==0, ]
@@ -162,4 +163,32 @@ varianceTest <- function(df, metricsColumn, labelsColumn) {
   model <- cbind(nameDF, model, anovaModel)
   
   return(model)
+}
+
+cohensD <- function(df, metricsColumn, labelsColumn, pool=FALSE, hedgesD=FALSE) {
+  # Based on: https://www.rdocumentation.org/packages/effsize/versions/0.7.4/topics/cohen.d
+  library("effsize")
+  
+  columNames <- names(df)
+  goods <- df[metricsColumn][df[labelsColumn]==0, ]
+  bads  <- df[metricsColumn][df[labelsColumn]>0, ]
+
+  # Second parameter is treated as control group
+  result <- cohen.d(bads, goods, pooled=pool, hedges.correction=hedgesD)
+  
+  return(result)
+}
+
+cohensD.as.vector <- function(df, metricsColumn, labelsColumn, pool=FALSE, hedgesD=FALSE) {
+  metricName <- names(df[metricsColumn])
+  r <- cohensD(df, metricsColumn, labelsColumn, pool=pool, hedgesD=hedgesD)
+  
+  classification.as.int <- r$magnitude
+  classification.as.str <- levels(classification.as.int)[unclass(classification.as.int)]
+  
+  result        <- c(metricName, r$estimate, classification.as.str, r$method, r$conf.int)
+  names(result) <- c("Metric", "Delta", "Classification", "Test Method", "Conf int. (lower)", "Conf int. (upper)")
+  result.as.df  <- as.data.frame(t(result))
+  
+  return(result.as.df)
 }

@@ -226,6 +226,22 @@ analysis <- function(df, isFunctionBased, type, dataName) {
     
     model <- NULL
     print("Finished")
+  } else if (grepl("^cohen", type)) {
+    df$nErrors[df$nErrors > 0] <- 1
+    df <- removeIdentifier(df, isFunctionBased)
+    columnNames <- normalizeNames(names(df))
+    names(df) <- columnNames
+    
+    pool    <- grepl("-pool", type)
+    hedgesD <- grepl("-hedgesD", type)
+    
+    model <- data.frame()
+    for (column in 2:ncol(df)) {
+      print(paste("Process:", columnNames[column]))
+      result  <- cohensD.as.vector(df, column, 1, pool=pool, hedgesD=hedgesD)
+      model   <- rbind(model, result)
+    }
+    print("Finished")
   } else {
     print("Please specify one of the following arguments:")
     print("- lm: Linear regression, all metrics are independent")
@@ -240,6 +256,7 @@ analysis <- function(df, isFunctionBased, type, dataName) {
     print("- kruskal: Kruskal-Wallis test on each metric (healthy vs. erroneous functions)")
     print("- ecdf[-log][-no0]: Compute Comulative Distributed Diagrams for each metric (healthy vs. erroneous functions); optional use a logarithmic scale; optional remove rows containing Zeros")
     print("- density[-log][-no0]: Compute Density plots for each metric (healthy vs. erroneous functions); optional use a logarithmic scale; optional remove rows containing Zeros")
+    print("- cohen[-pool][-hedgesD]: Compute Cohens'D to measure effect size; optional use pooled variance (for unbalanced samples); optional use Hedges'g(for unbalanced samples)")
   }
   
   if (!is.null(model)) {
