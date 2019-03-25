@@ -239,7 +239,7 @@ analysis <- function(df, isFunctionBased, type, dataName) {
     model <- data.frame()
     for (column in 2:ncol(df)) {
       print(paste("Process:", columnNames[column]))
-      result  <- cohensD.as.df(df, column, 1, pool=pool, hedgesD=hedgesD)
+      result  <- cohensD.as.df(df, column, 1, pool=pool, hedgesD=hedgesD, addSummary=addSummary)
       model   <- rbind(model, result)
     }
     print("Finished")
