@@ -235,12 +235,21 @@ analysis <- function(df, isFunctionBased, type, dataName) {
     pool       <- grepl("-pool", type)
     hedgesD    <- grepl("-hedgesD", type)
     addSummary <- grepl("-summary", type)
+    removeZeros = grepl("-no0", type)
     
     model <- data.frame()
     for (column in 2:ncol(df)) {
       print(paste("Process:", columnNames[column]))
-      result  <- cohensD.as.df(df, column, 1, pool=pool, hedgesD=hedgesD, addSummary=addSummary)
-      model   <- rbind(model, result)
+      
+      if(removeZeros) {
+        filteredDF <- removeRowsByValue(df, column, 0)
+      } else {
+        filteredDF <- df
+      }
+      if (length(filteredDF) > 0 && nrow(filteredDF) > 0) {
+        result  <- cohensD.as.df(filteredDF, column, 1, pool=pool, hedgesD=hedgesD, addSummary=addSummary)
+        model   <- rbind(model, result)
+      }
     }
     print("Finished")
   } else {
@@ -257,7 +266,7 @@ analysis <- function(df, isFunctionBased, type, dataName) {
     print("- kruskal: Kruskal-Wallis test on each metric (healthy vs. erroneous functions)")
     print("- ecdf[-log][-no0]: Compute Comulative Distributed Diagrams for each metric (healthy vs. erroneous functions); optional use a logarithmic scale; optional remove rows containing Zeros")
     print("- density[-log][-no0]: Compute Density plots for each metric (healthy vs. erroneous functions); optional use a logarithmic scale; optional remove rows containing Zeros")
-    print("- cohen[-pool][-hedgesD][-summary]: Compute Cohens'D to measure effect size; optional use pooled variance (for unbalanced samples); optional use Hedges'g(for unbalanced samples); optional computes statistical summary of both classes like median, mean, ...")
+    print("- cohen[-pool][-hedgesD][-summary][-no0]: Compute Cohens'D to measure effect size; optional use pooled variance (for unbalanced samples); optional use Hedges'g(for unbalanced samples); optional computes statistical summary of both classes like median, mean, ...; optional remove rows containing Zeros")
   }
   
   if (!is.null(model)) {
