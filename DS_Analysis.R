@@ -137,7 +137,7 @@ analysis <- function(df, isFunctionBased, type, dataName) {
     model <- pcaAnalyses(df, isFunctionBased, type)
   } else if (type == "glm" || type == "glm-k") {
     model <- glmAnalysis(df, isFunctionBased, type)
-  } else if (type == "filterMetrics") {
+  } else if (grepl("^filterMetrics", type)) {
     names <- readFromCSV("UsefulMetrics")
     if (!keepRNames) {
       df <- normalizeColumnNames(df)
@@ -179,7 +179,6 @@ analysis <- function(df, isFunctionBased, type, dataName) {
       tmp   <- varianceTest(df, column, 1)
       model <- rbind(model, tmp)
     }
-    print("Finished")
   } else if (type == "welch") {
     model <- welchAnalysis(df, isFunctionBased)
     analysisName <- paste("Welch test results for ", dataName, sep="")
@@ -298,12 +297,11 @@ analysis <- function(df, isFunctionBased, type, dataName) {
 readAndAnalyse <- function(listOfFileNames, isFunctionBased, type, folder) {
   print(paste("Performing", type, "analysis."))
   name <- listOfFileNames[1]
-  # df <- readFromCSV(listOfFileNames[1], folder="data/atomic_full")
   df <- readFromCSV(listOfFileNames[1], folder=folder)
   
   if (length(listOfFileNames) > 1) {
     for (f in listOfFileNames[-1]) {
-      print(paste("Process:", f))
+      print(paste("Merge:", f))
       newItem <- readFromCSV(f, folder=folder)
       
       # see: https://stackoverflow.com/a/17579145
