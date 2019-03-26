@@ -147,8 +147,10 @@ analysis <- function(df, isFunctionBased, type, dataName) {
     removeDots = TRUE
     if (removeDots) {
       columNames   <- colnames(df)
-      names        <- gsub("\\.", " ", names)
+      names        <- gsub("\\.", "", names)
+      names        <- gsub(" ", "", names)
       columNames   <- gsub("\\.", " ", columNames)
+      columNames   <- gsub(" ", "", columNames)
       colnames(df) <- columNames
     }
     
