@@ -147,10 +147,12 @@ analysis <- function(df, isFunctionBased, type, dataName) {
     removeDots = TRUE
     if (removeDots) {
       columNames   <- colnames(df)
-      names        <- gsub("\\.", "", names)
-      names        <- gsub(" ", "", names)
-      columNames   <- gsub("\\.", " ", columNames)
-      columNames   <- gsub(" ", "", columNames)
+      names[] <- lapply(names, function(x) gsub("\\.", "", x))
+      # names[] <- lapply(names, function(x) gsub(" ", "", x))
+      # names        <- gsub("\\.", "", names)
+      # names        <- gsub(" ", "", names)
+      columNames   <- gsub("\\.", "", columNames)
+      # columNames   <- gsub(" ", "", columNames)
       colnames(df) <- columNames
     }
     
@@ -325,7 +327,7 @@ readAndAnalyse <- function(listOfFileNames, isFunctionBased, type, folder) {
 
 if (length(args) == 0) {
   #stop("Please specify filename.", call.=FALSE)
-  readAndAnalyse(c("Sample"), TRUE, "ecdf", "data")
+  readAndAnalyse(c("Sample"), TRUE, "filterMetrics", "data")
 } else {
   # See https://stackoverflow.com/a/26692756
   vargs <- strsplit(args, ",")
