@@ -258,7 +258,7 @@ analysis <- function(df, isFunctionBased, type, dataName) {
     print("- lm2: Linear regression, consider also metric combinations")
     print("- pca-linear/loc: PC analysis with linear or logarithmic normaliation")
     print("- glm[-k]: Logistic Regression (Binary classification); optional k-Fold based")
-    print("- mergePCs: Select metrics, which are used in pricinpal components")
+    print("- mergePCs: Select metrics, which are provided in UsefulMetrics.csv (probably created by PC Analysis)")
     print("- mergeOnly: Merge only metrics (from multiple input data) into one common sheet")
     print("- VisDif: Compute violin diagrams for each metric (healthy vs. erroneous functions)")
     print("- anova: Compute statistical summaries and ANOVA test for each metric (healthy vs. erroneous functions)")
