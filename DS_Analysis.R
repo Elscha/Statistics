@@ -79,7 +79,6 @@ welchAnalysis <- function(df, isFunctionBased) {
     model      <- rbind(model, dataDF)
   }
   colnames(model) <- modelNames
-  print("Finished")
   
   return(model)
 }
@@ -106,7 +105,6 @@ kruskalAnalysis <- function(df, isFunctionBased) {
     model      <- rbind(model, dataDF)
   }
   colnames(model) <- modelNames
-  print("Finished")
   
   return(model)
 }
@@ -135,7 +133,7 @@ analysis <- function(df, isFunctionBased, type, dataName) {
     model <- pcaAnalyses(df, isFunctionBased, type)
   } else if (type == "glm" || type == "glm-k") {
     model <- glmAnalysis(df, isFunctionBased, type)
-  } else if (type == "mergePCs") {
+  } else if (type == "filterMetrics") {
     names <- readFromCSV("UsefulMetrics")
     df <- normalizeColumnNames(df)
     model <- applyPCs(df, names)
@@ -198,7 +196,6 @@ analysis <- function(df, isFunctionBased, type, dataName) {
       }
     }
     model <- NULL
-    print("Finished")
   } else if (grepl("^density", type)) {
     df$nErrors[df$nErrors > 0] <- 1
     df <- removeIdentifier(df, isFunctionBased)
@@ -225,17 +222,22 @@ analysis <- function(df, isFunctionBased, type, dataName) {
     }
     
     model <- NULL
-    print("Finished")
   } else if (grepl("^cohen", type)) {
-    df$nErrors[df$nErrors > 0] <- 1
-    df <- removeIdentifier(df, isFunctionBased)
-    columnNames <- normalizeNames(names(df))
-    names(df) <- columnNames
-    
     pool       <- grepl("-pool", type)
     hedgesD    <- grepl("-hedgesD", type)
     addSummary <- grepl("-summary", type)
     removeZeros = grepl("-no0", type)
+    keepRNames = grepl("-keepRNames", type)
+    
+    df$nErrors[df$nErrors > 0] <- 1
+    df <- removeIdentifier(df, isFunctionBased)
+    if (!keepRNames) {
+      columnNames <- normalizeNames(names(df))
+    } else {
+      columnNames <- names(df)
+    }
+    names(df) <- columnNames
+    
     
     model <- data.frame()
     for (column in 2:ncol(df)) {
@@ -251,14 +253,13 @@ analysis <- function(df, isFunctionBased, type, dataName) {
         model   <- rbind(model, result)
       }
     }
-    print("Finished")
   } else {
     print("Please specify one of the following arguments:")
     print("- lm: Linear regression, all metrics are independent")
     print("- lm2: Linear regression, consider also metric combinations")
     print("- pca-linear/loc: PC analysis with linear or logarithmic normaliation")
     print("- glm[-k]: Logistic Regression (Binary classification); optional k-Fold based")
-    print("- mergePCs: Select metrics, which are provided in UsefulMetrics.csv (probably created by PC Analysis)")
+    print("- filterMetrics: Select metrics, which are provided in UsefulMetrics.csv (probably created by PC Analysis)")
     print("- mergeOnly: Merge only metrics (from multiple input data) into one common sheet")
     print("- VisDif: Compute violin diagrams for each metric (healthy vs. erroneous functions)")
     print("- anova: Compute statistical summaries and ANOVA test for each metric (healthy vs. erroneous functions)")
@@ -266,12 +267,13 @@ analysis <- function(df, isFunctionBased, type, dataName) {
     print("- kruskal: Kruskal-Wallis test on each metric (healthy vs. erroneous functions)")
     print("- ecdf[-log][-no0]: Compute Comulative Distributed Diagrams for each metric (healthy vs. erroneous functions); optional use a logarithmic scale; optional remove rows containing Zeros")
     print("- density[-log][-no0]: Compute Density plots for each metric (healthy vs. erroneous functions); optional use a logarithmic scale; optional remove rows containing Zeros")
-    print("- cohen[-pool][-hedgesD][-summary][-no0]: Compute Cohens'D to measure effect size; optional use pooled variance (for unbalanced samples); optional use Hedges'g(for unbalanced samples); optional computes statistical summary of both classes like median, mean, ...; optional remove rows containing Zeros")
+    print("- cohen[-pool][-hedgesD][-summary][-no0][-keepRNames]: Compute Cohens'D to measure effect size; optional use pooled variance (for unbalanced samples); optional use Hedges'g(for unbalanced samples); optional computes statistical summary of both classes like median, mean, ...; optional remove rows containing Zeros; optional do not normalize metric names and keep R names.")
   }
   
   if (!is.null(model)) {
     saveResults(analysisName, model, p)
   }
+    print("Finished")
 }
 
 readAndAnalyse <- function(listOfFileNames, isFunctionBased, type, folder) {

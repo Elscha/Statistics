@@ -92,9 +92,9 @@ createAllCombinationsFormula <- function(names, y="nErrors") {
 saveResults <- function(fileName, model, p = NULL) {
   
   if (!is.null(p)) {
-    name <- paste("out/Results for - ",  fileName, " - ", p, ".csv", sep = "")
+    name <- paste("out/", fileName, "-", p, ".csv", sep = "")
   } else {
-    name <- paste("out/Results for - ",  fileName, ".csv", sep = "")
+    name <- paste("out/", fileName, ".csv", sep = "")
   }
   write.table(model, name, sep=";", dec=".")
 }

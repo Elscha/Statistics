@@ -16,7 +16,11 @@ df <- readFromCSV("Sample", folder="data")
 df <- convertToNumbers2(df, TRUE)
 df <- removeIdentifier(df, TRUE)
 columNames <- names(df)
-column = 2
+columNames <- normalizeNames(columNames)
+names(df) <- columNames
+
+df2 <- applyPCs(df, "No. int. blocks x SEPARATE_PARTIAL_BLOCKS x TOTAL_SIZES")
+# column = 2
 # name = columNames[column]
 # plot <- createKernelDensityPlot(df, column, 1, name, scale=TRUE)
 # print(plot)
@@ -38,7 +42,7 @@ column = 2
 # grepl("-no0", "ecdf-log-no0")
 # plot(c(0), col='blue')
 
-r1 <- cohensD.as.df(df, column, 1, addSummary=TRUE)
+# r1 <- cohensD.as.df(df, column, 1, addSummary=TRUE)
 # column = 3
 # r2 <- cohensD.as.df(df, column, 1)
 # r3 <- rbind(r1, r2)
