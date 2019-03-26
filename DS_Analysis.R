@@ -110,6 +110,10 @@ kruskalAnalysis <- function(df, isFunctionBased) {
 }
 
 analysis <- function(df, isFunctionBased, type, dataName) {
+  removeZeros = grepl("-no0", type)
+  keepRNames = grepl("-keepRNames", type)
+  logScale = grepl("-log", type)
+  
   df <- convertToNumbers2(df, isFunctionBased)
   analysisName <- paste("CorrelationResults (", type, ") for ", dataName, sep="")
   
@@ -135,6 +139,9 @@ analysis <- function(df, isFunctionBased, type, dataName) {
     model <- glmAnalysis(df, isFunctionBased, type)
   } else if (type == "filterMetrics") {
     names <- readFromCSV("UsefulMetrics")
+    if (!keepRNames) {
+      df <- normalizeColumnNames(df)
+    }
     df <- normalizeColumnNames(df)
     model <- applyPCs(df, names)
     
@@ -145,7 +152,11 @@ analysis <- function(df, isFunctionBased, type, dataName) {
   } else if (type == "VisDif") {
     df$nErrors[df$nErrors > 0] <- 1
     df <- removeIdentifier(df, isFunctionBased)
-    columnNames <- names(df)
+    if (!keepRNames) {
+      columnNames <- normalizeNames(names(df))
+    } else {
+      columnNames <- names(df)
+    }
     for (column in 2:ncol(df)) {
       p <- createVioplotForMetric2(df, column, 1)
       name <- paste("VarianceAnalysis-", columnNames[column], ".png", sep="")
@@ -155,7 +166,11 @@ analysis <- function(df, isFunctionBased, type, dataName) {
   } else if (type == "anova") {
     df$nErrors[df$nErrors > 0] <- 1
     df <- removeIdentifier(df, isFunctionBased)
-    columnNames <- names(df)
+    if (!keepRNames) {
+      columnNames <- normalizeNames(names(df))
+    } else {
+      columnNames <- names(df)
+    }
     
     analysisName <- "ANOVA"
     model <- data.frame()
@@ -174,10 +189,11 @@ analysis <- function(df, isFunctionBased, type, dataName) {
   } else if (grepl("^ecdf", type)) {
     df$nErrors[df$nErrors > 0] <- 1
     df <- removeIdentifier(df, isFunctionBased)
-    columnNames <- normalizeNames(names(df))
-    
-    logScale = grepl("-log", type)
-    removeZeros = grepl("-no0", type)
+    if (!keepRNames) {
+      columnNames <- normalizeNames(names(df))
+    } else {
+      columnNames <- names(df)
+    }
     
     for (column in 2:ncol(df)) {
       metricName <- columnNames[column]
@@ -199,10 +215,11 @@ analysis <- function(df, isFunctionBased, type, dataName) {
   } else if (grepl("^density", type)) {
     df$nErrors[df$nErrors > 0] <- 1
     df <- removeIdentifier(df, isFunctionBased)
-    columnNames <- normalizeNames(names(df))
-    
-    logScale = grepl("-log", type)
-    removeZeros = grepl("-no0", type)
+    if (!keepRNames) {
+      columnNames <- normalizeNames(names(df))
+    } else {
+      columnNames <- names(df)
+    }
     
     for (column in 2:ncol(df)) {
       metricName <- columnNames[column]
@@ -226,8 +243,6 @@ analysis <- function(df, isFunctionBased, type, dataName) {
     pool       <- grepl("-pool", type)
     hedgesD    <- grepl("-hedgesD", type)
     addSummary <- grepl("-summary", type)
-    removeZeros = grepl("-no0", type)
-    keepRNames = grepl("-keepRNames", type)
     
     df$nErrors[df$nErrors > 0] <- 1
     df <- removeIdentifier(df, isFunctionBased)
@@ -237,7 +252,6 @@ analysis <- function(df, isFunctionBased, type, dataName) {
       columnNames <- names(df)
     }
     names(df) <- columnNames
-    
     
     model <- data.frame()
     for (column in 2:ncol(df)) {
@@ -259,15 +273,20 @@ analysis <- function(df, isFunctionBased, type, dataName) {
     print("- lm2: Linear regression, consider also metric combinations")
     print("- pca-linear/loc: PC analysis with linear or logarithmic normaliation")
     print("- glm[-k]: Logistic Regression (Binary classification); optional k-Fold based")
-    print("- filterMetrics: Select metrics, which are provided in UsefulMetrics.csv (probably created by PC Analysis)")
+    print("- filterMetrics[-keepRNames]: Select metrics, which are provided in UsefulMetrics.csv (probably created by PC Analysis)")
     print("- mergeOnly: Merge only metrics (from multiple input data) into one common sheet")
     print("- VisDif: Compute violin diagrams for each metric (healthy vs. erroneous functions)")
-    print("- anova: Compute statistical summaries and ANOVA test for each metric (healthy vs. erroneous functions)")
+    print("- anova[-keepRNames]: Compute statistical summaries and ANOVA test for each metric (healthy vs. erroneous functions)")
     print("- welch: Single Welch test on each metric (healthy vs. erroneous functions)")
     print("- kruskal: Kruskal-Wallis test on each metric (healthy vs. erroneous functions)")
-    print("- ecdf[-log][-no0]: Compute Comulative Distributed Diagrams for each metric (healthy vs. erroneous functions); optional use a logarithmic scale; optional remove rows containing Zeros")
-    print("- density[-log][-no0]: Compute Density plots for each metric (healthy vs. erroneous functions); optional use a logarithmic scale; optional remove rows containing Zeros")
-    print("- cohen[-pool][-hedgesD][-summary][-no0][-keepRNames]: Compute Cohens'D to measure effect size; optional use pooled variance (for unbalanced samples); optional use Hedges'g(for unbalanced samples); optional computes statistical summary of both classes like median, mean, ...; optional remove rows containing Zeros; optional do not normalize metric names and keep R names.")
+    print("- ecdf[-log][-no0]: Compute Comulative Distributed Diagrams for each metric (healthy vs. erroneous functions)")
+    print("- density[-log][-no0]: Compute Density plots for each metric (healthy vs. erroneous functions)")
+    print("- cohen[-pool][-hedgesD][-summary][-no0][-keepRNames]: Compute Cohens'D to measure effect size; optional use pooled variance (for unbalanced samples); optional use Hedges'g (for unbalanced samples); optional computes statistical summary of both classes like median, mean, ...")
+    print("")
+    print("Optional parameters:")
+    print(" -log: Use a logarithmic scale")
+    print(" -no0: Remove rows containing Zeros")
+    print(" -keepRNames: Do not normalize metric names and keep R names.")
   }
   
   if (!is.null(model)) {
