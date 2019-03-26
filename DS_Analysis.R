@@ -143,6 +143,15 @@ analysis <- function(df, isFunctionBased, type, dataName) {
       df <- normalizeColumnNames(df)
     }
     df <- normalizeColumnNames(df)
+    
+    removeDots = TRUE
+    if (removeDots) {
+      columNames   <- colnames(df)
+      names        <- gsub("\\.", " ", names)
+      columNames   <- gsub("\\.", " ", columNames)
+      colnames(df) <- columNames
+    }
+    
     model <- applyPCs(df, names)
     
     analysisName <- "RelevantMetricsData"
