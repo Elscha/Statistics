@@ -153,8 +153,12 @@ analysis <- function(df, isFunctionBased, type, dataName) {
       # names        <- gsub(" ", "", names)
       columNames   <- gsub("\\.", "", columNames)
       columNames   <- gsub("  ", " ", columNames)
+      columNames   <- gsub(",", "", columNames)
       # columNames   <- gsub(" ", "", columNames)
       colnames(df) <- columNames
+      
+      print(paste("Columns of DF:", columNames))
+      print(paste("Columns to keep:", names))
     }
     
     model <- applyPCs(df, names)
