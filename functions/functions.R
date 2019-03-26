@@ -1,5 +1,5 @@
 readFromCSV <- function(fileName, folder="data", separator=";") {
-  path    <- paste(folder, "/", fileName, ".csv", sep = "")
+  path    <- paste(folder, "/", fileName, ".csv", sep = "", stringsAsFactors=FALSE)
   locData <- read.csv(path, header = TRUE, sep=separator)
   
   return(locData)
