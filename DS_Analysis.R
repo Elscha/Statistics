@@ -153,7 +153,7 @@ analysis <- function(df, isFunctionBased, type, dataName) {
       # names        <- gsub(" ", "", names)
       columNames   <- gsub("\\.", "", columNames)
       columNames   <- gsub("  ", " ", columNames)
-      columNames   <- gsub(",", "", columNames)
+      #columNames   <- gsub(",", "", columNames)
       # columNames   <- gsub(" ", "", columNames)
       colnames(df) <- columNames
       
